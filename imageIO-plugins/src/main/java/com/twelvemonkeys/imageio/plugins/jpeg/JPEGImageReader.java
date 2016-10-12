@@ -53,6 +53,7 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
+
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
@@ -112,7 +113,7 @@ public class JPEGImageReader extends ImageReaderBase {
     private static final Map<Integer, List<String>> SEGMENT_IDENTIFIERS = createSegmentIds();
 
     private static Map<Integer, List<String>> createSegmentIds() {
-        Map<Integer, List<String>> map = new LinkedHashMap<>();
+        Map<Integer, List<String>> map = new LinkedHashMap<Integer, List<String>>();
 
         // Need all APP markers to be able to re-generate proper metadata later
         for (int appMarker = JPEG.APP0; appMarker <= JPEG.APP15; appMarker++) {
@@ -224,7 +225,7 @@ public class JPEGImageReader extends ImageReaderBase {
         JPEGColorSpace csType = getSourceCSType(getJFIF(), getAdobeDCT(), getSOF());
 
         if (types == null || !types.hasNext() || csType == JPEGColorSpace.CMYK || csType == JPEGColorSpace.YCCK) {
-            ArrayList<ImageTypeSpecifier> typeList = new ArrayList<>();
+            ArrayList<ImageTypeSpecifier> typeList = new ArrayList<ImageTypeSpecifier>();
             // Add the standard types, we can always convert to these
             typeList.add(ImageTypeSpecifiers.createFromBufferedImageType(BufferedImage.TYPE_3BYTE_BGR));
             typeList.add(ImageTypeSpecifiers.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB));
@@ -677,10 +678,14 @@ public class JPEGImageReader extends ImageReaderBase {
 
             segments = JPEGSegmentUtil.readSegments(imageInput, SEGMENT_IDENTIFIERS);
         }
-        catch (IIOException | IllegalArgumentException ignore) {
+        catch (IIOException  ignore) {
             if (DEBUG) {
                 ignore.printStackTrace();
             }
+        }catch(IllegalArgumentException ignore){
+        	if (DEBUG) {
+        		ignore.printStackTrace();
+        	}
         }
         finally {
             imageInput.reset();
@@ -701,7 +706,7 @@ public class JPEGImageReader extends ImageReaderBase {
             if ((marker == ALL_APP_MARKERS && segment.marker() >= JPEG.APP0 && segment.marker() <= JPEG.APP15 || segment.marker() == marker)
                     && (identifier == null || identifier.equals(segment.identifier()))) {
                 if (appSegments == Collections.EMPTY_LIST) {
-                    appSegments = new ArrayList<>(segments.size());
+                    appSegments = new ArrayList<JPEGSegment>(segments.size());
                 }
 
                 appSegments.add(segment);
@@ -959,7 +964,7 @@ public class JPEGImageReader extends ImageReaderBase {
         checkBounds(imageIndex);
 
         if (thumbnails == null) {
-            thumbnails = new ArrayList<>();
+            thumbnails = new ArrayList<ThumbnailReader>();
             ThumbnailReadProgressListener thumbnailProgressDelegator = new ThumbnailProgressDelegate();
 
             // Read JFIF thumbnails if present
@@ -1278,8 +1283,10 @@ public class JPEGImageReader extends ImageReaderBase {
                             roi = new Rectangle(Integer.parseInt(region[0]), Integer.parseInt(region[2]));
                         }
                     }
-                    catch (IndexOutOfBoundsException | NumberFormatException e) {
+                    catch (IndexOutOfBoundsException  e) {
                         System.err.println("Bad source region ([x,y,]w, h): '" + args[argIdx] + "'");
+                    }catch(NumberFormatException e){
+                    	System.err.println("Bad source region ([x,y,]w, h): '" + args[argIdx] + "'");
                     }
                 }
                 else if (arg.equals("-m") || arg.equals("--metadata")) {

@@ -6,6 +6,4 @@
 - servlet(com.twelvemonkeys.servlet.image.IIOProviderContextListener)
 	 
 1. *在web系统中使用需要在web.xml中注册IIOProviderContextListener监听器，
-2. *本代码需要在JDK　1.7+中运行
-
-本工程不再更新，迁移至[imageIO-plugins](https://git.oschina.net/shuqi/imageIO-plugins.git)更新
+2. *本代码需要在JDK　1.6+中运行

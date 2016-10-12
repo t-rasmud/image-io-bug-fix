@@ -121,20 +121,27 @@ public class CCITTFaxEncoderStreamTest {
 
     @Test
     public void testReencodeImages() throws IOException {
-        try (ImageInputStream iis = ImageIO.createImageInputStream(getClassLoaderResource("/tiff/fivepages-scan-causingerrors.tif").openStream())) {
+    	ImageInputStream iis = null;//ImageIO.createImageInputStream(getClassLoaderResource("/tiff/fivepages-scan-causingerrors.tif").openStream())
+        try {
+        	iis = ImageIO.createImageInputStream(getClassLoaderResource("/tiff/fivepages-scan-causingerrors.tif").openStream());
             ImageReader reader = ImageIO.getImageReaders(iis).next();
             reader.setInput(iis, true);
 
             ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
             ImageWriter writer = ImageIO.getImageWritersByFormatName("TIFF").next();
             BufferedImage originalImage;
-
-            try (ImageOutputStream output = ImageIO.createImageOutputStream(outputBuffer)) {
+            ImageOutputStream output = null;//ImageIO.createImageOutputStream(outputBuffer);
+            try{
+            	 output = ImageIO.createImageOutputStream(outputBuffer);
                 writer.setOutput(output);
                 originalImage = reader.read(0);
 
                 IIOImage outputImage = new IIOImage(originalImage, null, reader.getImageMetadata(0));
                 writer.write(outputImage);
+            }finally{
+            	if(output != null){
+            		output.close();
+            	}
             }
 
             byte[] originalData = ((DataBufferByte) originalImage.getData().getDataBuffer()).getData();
@@ -143,6 +150,10 @@ public class CCITTFaxEncoderStreamTest {
             byte[] reencodedData = ((DataBufferByte) reencodedImage.getData().getDataBuffer()).getData();
 
             assertArrayEquals(originalData, reencodedData);
+        }finally{
+        	if(iis != null){
+        		iis.close();
+        	}
         }
     }
 
@@ -181,10 +192,14 @@ public class CCITTFaxEncoderStreamTest {
         outputSteam.write(imageData);
         outputSteam.close();
         byte[] encodedData = imageOutput.toByteArray();
-
-        try (CCITTFaxDecoderStream inputStream =
-                     new CCITTFaxDecoderStream(new ByteArrayInputStream(encodedData), 6, type, fillOrder, options)) {
+        CCITTFaxDecoderStream inputStream = null;//new CCITTFaxDecoderStream(new ByteArrayInputStream(encodedData), 6, type, fillOrder, options);
+        try  {
+        	inputStream = new CCITTFaxDecoderStream(new ByteArrayInputStream(encodedData), 6, type, fillOrder, options);
             new DataInputStream(inputStream).readFully(redecodedData);
+        }finally{
+        	if(inputStream != null){
+        		inputStream.close();
+        	}
         }
 
         assertArrayEquals(imageData, redecodedData);

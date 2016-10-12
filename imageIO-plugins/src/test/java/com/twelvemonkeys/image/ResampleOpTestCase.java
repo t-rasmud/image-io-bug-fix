@@ -69,7 +69,7 @@ public class ResampleOpTestCase {
     }
 
     private void assertResampleBufferedImageTypes(final int pFilterType) {
-        List<String> exceptions = new ArrayList<>();
+        List<String> exceptions = new ArrayList<String>();
 
         // Test all image types in BufferedImage
         for (int type = BufferedImage.TYPE_INT_ARGB; type <= BufferedImage.TYPE_BYTE_INDEXED; type++) {

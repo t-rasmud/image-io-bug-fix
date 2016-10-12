@@ -30,6 +30,7 @@ package com.twelvemonkeys.imageio.util;
 
 import com.twelvemonkeys.image.ImageUtil;
 import com.twelvemonkeys.imageio.stream.URLImageInputStreamSpi;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -42,6 +43,7 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -83,8 +85,10 @@ public abstract class ImageReaderAbstractTest<T extends ImageReader> {
         try {
             return getReaderClass().newInstance();
         }
-        catch (InstantiationException | IllegalAccessException e) {
+        catch (InstantiationException  e) {
             throw new RuntimeException(e);
+        }catch(IllegalAccessException e){
+        	throw new RuntimeException(e);
         }
     }
 
@@ -1388,24 +1392,31 @@ public abstract class ImageReaderAbstractTest<T extends ImageReader> {
                 reader.read(0, param);
                 fail("Expected to throw exception with illegal type specifier");
             }
-            catch (IIOException | IllegalArgumentException expected) {
+            catch (IIOException expected) {
                 // TODO: This is thrown by ImageReader.getDestination. But are we happy with that?
                 String message = expected.getMessage().toLowerCase();
                 if (!(message.contains("destination") && message.contains("type"))) {
                     // Allow this to bubble up, du to a bug in the Sun PNGImageReader
                     throw expected;
                 }
+            }catch(IllegalArgumentException expected){
+            	// TODO: This is thrown by ImageReader.getDestination. But are we happy with that?
+            	String message = expected.getMessage().toLowerCase();
+            	if (!(message.contains("destination") && message.contains("type"))) {
+            		// Allow this to bubble up, du to a bug in the Sun PNGImageReader
+            		throw expected;
+            	}
             }
         }
     }
 
     private List<ImageTypeSpecifier> createIllegalTypes(Iterator<ImageTypeSpecifier> pValidTypes) {
-        List<ImageTypeSpecifier> allTypes = new ArrayList<>();
+        List<ImageTypeSpecifier> allTypes = new ArrayList<ImageTypeSpecifier>();
         for (int i = BufferedImage.TYPE_INT_RGB; i < BufferedImage.TYPE_BYTE_INDEXED; i++) {
             allTypes.add(ImageTypeSpecifier.createFromBufferedImageType(i));
         }
 
-        List<ImageTypeSpecifier> illegalTypes = new ArrayList<>(allTypes);
+        List<ImageTypeSpecifier> illegalTypes = new ArrayList<ImageTypeSpecifier>(allTypes);
         while (pValidTypes.hasNext()) {
             ImageTypeSpecifier valid = pValidTypes.next();
             boolean removed = illegalTypes.remove(valid);
@@ -1635,12 +1646,12 @@ public abstract class ImageReaderAbstractTest<T extends ImageReader> {
                 throw new IllegalArgumentException("input == null");
             }
 
-            sizes = new ArrayList<>();
-            images = new ArrayList<>();
+            sizes = new ArrayList<Dimension>();
+            images = new ArrayList<BufferedImage>();
 
             List<Dimension> sizes = pSizes;
             if (sizes == null) {
-                sizes = new ArrayList<>();
+                sizes = new ArrayList<Dimension>();
                 if (pImages != null) {
                     for (BufferedImage image : pImages) {
                         sizes.add(new Dimension(image.getWidth(), image.getHeight()));

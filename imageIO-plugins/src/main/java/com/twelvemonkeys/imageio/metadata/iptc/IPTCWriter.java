@@ -1,14 +1,15 @@
 package com.twelvemonkeys.imageio.metadata.iptc;
 
+import static com.twelvemonkeys.lang.Validate.notNull;
+
+import java.io.IOException;
+
+import javax.imageio.stream.ImageOutputStream;
+
+import com.shuqi.hack.StandardCharsets;
 import com.twelvemonkeys.imageio.metadata.Directory;
 import com.twelvemonkeys.imageio.metadata.Entry;
 import com.twelvemonkeys.imageio.metadata.MetadataWriter;
-
-import javax.imageio.stream.ImageOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import static com.twelvemonkeys.lang.Validate.notNull;
 
 /**
  * IPTCWriter.

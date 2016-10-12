@@ -28,6 +28,7 @@
 
 package com.twelvemonkeys.imageio.metadata.exif;
 
+import com.shuqi.hack.StandardCharsets;
 import com.twelvemonkeys.imageio.metadata.CompoundDirectory;
 import com.twelvemonkeys.imageio.metadata.Directory;
 import com.twelvemonkeys.imageio.metadata.Entry;
@@ -36,11 +37,11 @@ import com.twelvemonkeys.lang.Validate;
 
 import javax.imageio.IIOException;
 import javax.imageio.stream.ImageOutputStream;
+
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -188,7 +189,7 @@ public final class EXIFWriter extends MetadataWriter {
 
     private Directory ensureOrderedDirectory(final Directory directory) {
         if (!isSorted(directory)) {
-            List<Entry> entries = new ArrayList<>(directory.size());
+            List<Entry> entries = new ArrayList<Entry>(directory.size());
 
             for (Entry entry : directory) {
                 entries.add(entry);

@@ -28,6 +28,61 @@
 
 package com.twelvemonkeys.imageio.plugins.tiff;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.color.CMMException;
+import java.awt.color.ColorSpace;
+import java.awt.color.ICC_Profile;
+import java.awt.image.BandedSampleModel;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferFloat;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DataBufferShort;
+import java.awt.image.DataBufferUShort;
+import java.awt.image.IndexColorModel;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
+
+import javax.imageio.IIOException;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.event.IIOReadWarningListener;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataFormatImpl;
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.plugins.jpeg.JPEGImageReadParam;
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ServiceRegistry;
+import javax.imageio.stream.ImageInputStream;
+
+import org.w3c.dom.NodeList;
+
+import com.shuqi.hack.StandardCharsets;
 import com.twelvemonkeys.imageio.ImageReaderBase;
 import com.twelvemonkeys.imageio.color.CIELabColorConverter;
 import com.twelvemonkeys.imageio.color.CIELabColorConverter.Illuminant;
@@ -52,33 +107,6 @@ import com.twelvemonkeys.io.FastByteArrayOutputStream;
 import com.twelvemonkeys.io.LittleEndianDataInputStream;
 import com.twelvemonkeys.io.enc.DecoderStream;
 import com.twelvemonkeys.io.enc.PackBitsDecoder;
-import org.w3c.dom.NodeList;
-
-import javax.imageio.*;
-import javax.imageio.event.IIOReadWarningListener;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.metadata.IIOMetadataFormatImpl;
-import javax.imageio.metadata.IIOMetadataNode;
-import javax.imageio.plugins.jpeg.JPEGImageReadParam;
-import javax.imageio.spi.IIORegistry;
-import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.spi.ServiceRegistry;
-import javax.imageio.stream.ImageInputStream;
-import java.awt.*;
-import java.awt.color.CMMException;
-import java.awt.color.ColorSpace;
-import java.awt.color.ICC_Profile;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.*;
-import java.io.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
 
 /**
  * ImageReader implementation for Aldus/Adobe Tagged Image File Format (TIFF).
@@ -728,7 +756,7 @@ public class TIFFImageReader extends ImageReaderBase {
         readIFD(imageIndex);
 
         ImageTypeSpecifier rawType = getRawImageType(imageIndex);
-        Set<ImageTypeSpecifier> specs = new LinkedHashSet<>(5);
+        Set<ImageTypeSpecifier> specs = new LinkedHashSet<ImageTypeSpecifier>(5);
 
         // TODO: Based on raw type, we can probably convert to most RGB types at least, maybe gray etc
         if (rawType.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_RGB) {
@@ -992,8 +1020,10 @@ public class TIFFImageReader extends ImageReaderBase {
                             imageInput.seek(stripTileOffsets[i]);
 
                             int length = stripTileByteCounts != null ? (int) stripTileByteCounts[i] : Short.MAX_VALUE;
-
-                            try (ImageInputStream subStream = new SubImageInputStream(imageInput, length)) {
+                            
+                            ImageInputStream subStream =null;
+                            try {
+                            	subStream = new SubImageInputStream(imageInput, length);
                                 jpegReader.setInput(subStream);
                                 jpegParam.setSourceRegion(new Rectangle(0, 0, colsInTile, rowsInTile));
 
@@ -1015,6 +1045,10 @@ public class TIFFImageReader extends ImageReaderBase {
                                     normalizeColor(interpretation, ((DataBufferByte) raster.getDataBuffer()).getData());
                                     destination.getRaster().setDataElements(col - srcRegion.x, row - srcRegion.y, raster);
                                 }
+                            }finally{
+                            	if(subStream != null){
+                            		subStream.close();
+                            	}
                             }
                         }
 
@@ -1131,8 +1165,10 @@ public class TIFFImageReader extends ImageReaderBase {
                     processImageStarted(imageIndex); // Better yet, would be to delegate read progress here...
 
                     imageInput.seek(realJPEGOffset);
-
-                    try (ImageInputStream stream = new SubImageInputStream(imageInput, length)) {
+                    
+                    ImageInputStream stream = null;
+                    try  {
+                    	stream = new SubImageInputStream(imageInput, length);
                         jpegReader.setInput(stream);
                         jpegParam.setSourceRegion(srcRegion);
 
@@ -1151,6 +1187,10 @@ public class TIFFImageReader extends ImageReaderBase {
                             normalizeColor(interpretation, ((DataBufferByte) raster.getDataBuffer()).getData());
                             destination.getRaster().setDataElements(0, 0, raster);
                         }
+                    }finally{
+                    	if(stream != null){
+                    		stream.close();
+                    	}
                     }
 
                     processImageProgress(100f);
@@ -1226,15 +1266,17 @@ public class TIFFImageReader extends ImageReaderBase {
                             if (new Rectangle(col, row, colsInTile, rowsInTile).intersects(srcRegion)) {
                                 imageInput.seek(stripTileOffsets[i]);
 
-                                try (ImageInputStream stream = ImageIO.createImageInputStream(new SequenceInputStream(Collections.enumeration(
-                                        Arrays.asList(
-                                                createJFIFStream(destRaster.getNumBands(), stripTileWidth, stripTileHeight, qTables, dcTables, acTables),
-                                                IIOUtil.createStreamAdapter(imageInput, stripTileByteCounts != null
-                                                                                        ? (int) stripTileByteCounts[i]
-                                                                                        : Short.MAX_VALUE),
-                                                new ByteArrayInputStream(new byte[] {(byte) 0xff, (byte) 0xd9}) // EOI
-                                        )
-                                )))) {
+                                ImageInputStream stream = null;
+                                try {
+                                	stream = ImageIO.createImageInputStream(new SequenceInputStream(Collections.enumeration(
+                                            Arrays.asList(
+                                                    createJFIFStream(destRaster.getNumBands(), stripTileWidth, stripTileHeight, qTables, dcTables, acTables),
+                                                    IIOUtil.createStreamAdapter(imageInput, stripTileByteCounts != null
+                                                                                            ? (int) stripTileByteCounts[i]
+                                                                                            : Short.MAX_VALUE),
+                                                    new ByteArrayInputStream(new byte[] {(byte) 0xff, (byte) 0xd9}) // EOI
+                                            )
+                                    )));
                                     jpegReader.setInput(stream);
                                     jpegParam.setSourceRegion(new Rectangle(0, 0, colsInTile, rowsInTile));
                                     jpegParam.setDestinationOffset(new Point(col - srcRegion.x, row - srcRegion.y));
@@ -1255,6 +1297,10 @@ public class TIFFImageReader extends ImageReaderBase {
                                         normalizeColor(interpretation, ((DataBufferByte) raster.getDataBuffer()).getData());
                                         destination.getRaster().setDataElements(0, 0, raster);
                                     }
+                                }finally{
+                                	if(stream != null){
+                                		stream.close();
+                                	}
                                 }
                             }
 
@@ -1350,11 +1396,35 @@ public class TIFFImageReader extends ImageReaderBase {
             Constructor<ImageReader> constructor = readerClass.getConstructor(ImageReaderSpi.class);
             return constructor.newInstance(getOriginatingProvider());
         }
-        catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ignore) {
+        catch (ClassNotFoundException ignore) {
             if (DEBUG) {
                 ignore.printStackTrace();
             }
             // Fall back to default reader below
+        }
+        catch ( NoSuchMethodException  ignore) {
+        	if (DEBUG) {
+        		ignore.printStackTrace();
+        	}
+        	// Fall back to default reader below
+        }
+        catch (   InvocationTargetException  ignore) {
+        	if (DEBUG) {
+        		ignore.printStackTrace();
+        	}
+        	// Fall back to default reader below
+        }
+        catch (    InstantiationException  ignore) {
+        	if (DEBUG) {
+        		ignore.printStackTrace();
+        	}
+        	// Fall back to default reader below
+        }
+        catch (     IllegalAccessException ignore) {
+        	if (DEBUG) {
+        		ignore.printStackTrace();
+        	}
+        	// Fall back to default reader below
         }
 
         // If we can't get the standard reader, fall back to the default (first) reader
@@ -2036,8 +2106,11 @@ public class TIFFImageReader extends ImageReaderBase {
                 ICC_Profile profile = ICC_Profile.getInstance(new ByteArrayInputStream(value));
                 return ColorSpaces.validateProfile(profile);
             }
-            catch (CMMException | IllegalArgumentException ignore) {
+            catch (CMMException  ignore) {
                 processWarningOccurred("Ignoring broken/incompatible ICC profile: " + ignore.getMessage());
+            }
+            catch ( IllegalArgumentException ignore) {
+            	processWarningOccurred("Ignoring broken/incompatible ICC profile: " + ignore.getMessage());
             }
         }
 

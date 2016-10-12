@@ -84,11 +84,11 @@ public final class ColorSpaces {
     public static final int CS_GENERIC_CMYK = 5001;
 
     // Weak references to hold the color spaces while cached
-    private static WeakReference<ICC_Profile> adobeRGB1998 = new WeakReference<>(null);
-    private static WeakReference<ICC_Profile> genericCMYK = new WeakReference<>(null);
+    private static WeakReference<ICC_Profile> adobeRGB1998 = new WeakReference<ICC_Profile>(null);
+    private static WeakReference<ICC_Profile> genericCMYK = new WeakReference<ICC_Profile>(null);
 
     // Cache for the latest used color spaces
-    private static final Map<Key, ICC_ColorSpace> cache = new LRUHashMap<>(10);
+    private static final Map<Key, ICC_ColorSpace> cache = new LRUHashMap<Key, ICC_ColorSpace>(10);
 
     private ColorSpaces() {}
 
@@ -275,7 +275,7 @@ public final class ColorSpaces {
                             }
                         }
 
-                        adobeRGB1998 = new WeakReference<>(profile);
+                        adobeRGB1998 = new WeakReference<ICC_Profile>(profile);
                     }
                 }
 
@@ -298,7 +298,7 @@ public final class ColorSpaces {
                             return CMYKColorSpace.getInstance();
                         }
 
-                        genericCMYK = new WeakReference<>(profile);
+                        genericCMYK = new WeakReference<ICC_Profile>(profile);
                     }
                 }
 
@@ -343,10 +343,15 @@ public final class ColorSpaces {
             try {
                 return ICC_Profile.getInstance(profilePath);
             }
-            catch (SecurityException | IOException ignore) {
+            catch (SecurityException  ignore) {
                 if (DEBUG) {
                     ignore.printStackTrace();
                 }
+            }catch(IOException ignore){
+            	if (DEBUG) {
+            		ignore.printStackTrace();
+            	}
+            	
             }
         }
 
@@ -404,7 +409,7 @@ public final class ColorSpaces {
                         "com/twelvemonkeys/imageio/color/icc_profiles_" + Platform.os().id()
                 );
             }
-            catch (SecurityException | IOException ignore) {
+            catch (SecurityException  ignore) {
                 System.err.printf(
                         "Warning: Could not load system default ICC profile locations from %s, will use bundled fallback profiles.\n",
                         ignore.getMessage()
@@ -415,6 +420,17 @@ public final class ColorSpaces {
                 }
 
                 systemDefaults = null;
+            }catch(IOException ignore){
+            	System.err.printf(
+            			"Warning: Could not load system default ICC profile locations from %s, will use bundled fallback profiles.\n",
+            			ignore.getMessage()
+            			);
+            	
+            	if (DEBUG) {
+            		ignore.printStackTrace();
+            	}
+            	
+            	systemDefaults = null;
             }
 
             // Create map with defaults and add user overrides if any
@@ -427,8 +443,10 @@ public final class ColorSpaces {
                 );
                 profiles.putAll(userOverrides);
             }
-            catch (SecurityException | IOException ignore) {
-                // Most likely, this file won't be there
+            catch (SecurityException  ignore) {
+            	// Most likely, this file won't be there
+            }catch(IOException e){
+            	// Most likely, this file won't be there
             }
 
             if (DEBUG) {

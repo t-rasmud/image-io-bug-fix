@@ -36,6 +36,7 @@ import com.twelvemonkeys.lang.Validate;
 
 import javax.imageio.IIOException;
 import javax.imageio.stream.ImageInputStream;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -65,7 +66,7 @@ public final class IPTCReader extends MetadataReader {
     public Directory read(final ImageInputStream input) throws IOException {
         Validate.notNull(input, "input");
 
-        Map<Short, Entry> entries = new LinkedHashMap<>();
+        Map<Short, Entry> entries = new LinkedHashMap<Short, Entry>();
 
         // 0x1c identifies start of a tag
         while (input.read() == 0x1c) {

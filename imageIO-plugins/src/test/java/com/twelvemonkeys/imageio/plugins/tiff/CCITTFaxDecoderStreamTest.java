@@ -231,7 +231,7 @@ public class CCITTFaxDecoderStreamTest {
     @Test
     public void testMoreChangesThanColumns() throws IOException {
         // Produces an CCITT Stream with 9 changes on 8 columns.
-        byte[] data = new byte[] {(byte) 0b10101010};
+        byte[] data = new byte[] {(byte) 0xAA};//TODO is 0xAA  == (byte) 0b10101010 ?10
         ByteArrayOutputStream imageOutput = new ByteArrayOutputStream();
         OutputStream outputSteam = new CCITTFaxEncoderStream(imageOutput, 8, 1, TIFFExtension.COMPRESSION_CCITT_T6, 1, 0L);
         outputSteam.write(data);

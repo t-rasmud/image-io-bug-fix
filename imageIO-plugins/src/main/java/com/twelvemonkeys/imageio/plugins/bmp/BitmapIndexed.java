@@ -61,7 +61,7 @@ class BitmapIndexed extends BitmapDescriptor {
         // This is slightly obscure, and should probably be moved..
         Hashtable<String, Object> properties = null;
         if (entry instanceof DirectoryEntry.CUREntry) {
-            properties = new Hashtable<>(1);
+            properties = new Hashtable<String, Object>(1);
             properties.put("cursor_hotspot", ((DirectoryEntry.CUREntry) this.entry).getHotspot());
         }
 

@@ -221,7 +221,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     }
 
     private int getNextChangingElement(final int a0, final boolean white) throws IOException {
-        int start = (lastChangingElement & 0xFFFF_FFFE) + (white ? 0 : 1);
+        int start = (lastChangingElement & 0xFFFFFFFE) + (white ? 0 : 1);
         if (start > 2) {
             start -= 2;
         }

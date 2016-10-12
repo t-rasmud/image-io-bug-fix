@@ -104,12 +104,32 @@ public final class TIFFStreamMetadata extends IIOMetadata {
             byteOrder = order;
         }
     }
-
+    //======================seeyon add start=========================
+    enum orderEnum{
+    	BIG_ENDIAN,
+    	LITTLE_ENDIAN;
+    	public static orderEnum toEnum(String value){
+    		orderEnum[] vs = orderEnum.values();
+    		orderEnum r = null;
+    		for (orderEnum orderEnum2 : vs) {
+				if(orderEnum2.name().equals(value)){
+					r = orderEnum2;
+					break;
+				}
+			}
+    		return r;
+    	}
+    }
+    //======================seeyon add end=========================
     private ByteOrder getByteOrder(final String value) throws IIOInvalidTreeException {
-        switch (value) {
-            case "BIG_ENDIAN":
+    	orderEnum o = orderEnum.toEnum(value);
+    	if(o == null){
+    		return null;
+    	}
+    	switch (o) {
+            case BIG_ENDIAN:
                 return ByteOrder.BIG_ENDIAN;
-            case "LITTLE_ENDIAN":
+            case LITTLE_ENDIAN:
                 return ByteOrder.LITTLE_ENDIAN;
             default:
                 return null;

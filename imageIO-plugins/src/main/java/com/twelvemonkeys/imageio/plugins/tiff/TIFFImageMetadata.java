@@ -35,6 +35,7 @@ import com.twelvemonkeys.imageio.metadata.Entry;
 import com.twelvemonkeys.imageio.metadata.exif.Rational;
 import com.twelvemonkeys.imageio.metadata.exif.TIFF;
 import com.twelvemonkeys.lang.Validate;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -42,6 +43,7 @@ import org.w3c.dom.NodeList;
 import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadataFormatImpl;
 import javax.imageio.metadata.IIOMetadataNode;
+
 import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -915,7 +917,7 @@ public final class TIFFImageMetadata extends AbstractMetadata {
         super.mergeTree(formatName, root);
 
         // Set by "merging" with empty map
-        LinkedHashMap<Integer, Entry> entries = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Entry> entries = new LinkedHashMap<Integer, Entry>();
         mergeEntries(formatName, root, entries);
 
         // TODO: Consistency validation?
@@ -930,7 +932,7 @@ public final class TIFFImageMetadata extends AbstractMetadata {
         super.mergeTree(formatName, root);
 
         // Clone entries (shallow clone, as entries themselves are immutable)
-        LinkedHashMap<Integer, Entry> entries = new LinkedHashMap<>(ifd.size() + 10);
+        LinkedHashMap<Integer, Entry> entries = new LinkedHashMap<Integer, Entry>(ifd.size() + 10);
 
         for (Entry entry : ifd) {
             entries.put((Integer) entry.getIdentifier(), entry);
@@ -1141,7 +1143,7 @@ public final class TIFFImageMetadata extends AbstractMetadata {
             throw new IIOInvalidTreeException("Expected \"TIFFIFD\" node", ifdNode);
         }
 
-        List<Entry> entries = new ArrayList<>();
+        List<Entry> entries = new ArrayList<Entry>();
         NodeList nodes = ifdNode.getChildNodes();
 
         for (int i = 0; i < nodes.getLength(); i++) {

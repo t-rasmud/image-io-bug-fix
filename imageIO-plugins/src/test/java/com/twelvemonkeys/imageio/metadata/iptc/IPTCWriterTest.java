@@ -55,7 +55,7 @@ public class IPTCWriterTest extends MetadataWriterAbstractTest {
 
     @Test
     public void testWrite() throws IOException {
-        List<IPTCEntry> entries = new ArrayList<>();
+        List<IPTCEntry> entries = new ArrayList<IPTCEntry>();
         entries.add(new IPTCEntry(IPTC.TAG_KEYWORDS, new String[] {"Uno", "Due", "Tre"}));
 
         Directory iptc = new IPTCDirectory(entries);

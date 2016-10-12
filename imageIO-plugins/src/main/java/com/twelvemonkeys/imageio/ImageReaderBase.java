@@ -480,7 +480,9 @@ public abstract class ImageReaderBase extends ImageReader {
 
                             return true;
                         }
-                        catch (UnsupportedFlavorException | IOException ignore) {
+                        catch (UnsupportedFlavorException ignore) {
+                        }catch( IOException ignore){
+                        	
                         }
                     }
 

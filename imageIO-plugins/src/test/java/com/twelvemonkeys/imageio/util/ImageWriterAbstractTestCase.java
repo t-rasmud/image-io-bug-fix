@@ -121,8 +121,9 @@ public abstract class ImageWriterAbstractTestCase {
 
         for (RenderedImage testData : getTestData()) {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-            try (ImageOutputStream stream = ImageIO.createImageOutputStream(buffer)) {
+            ImageOutputStream stream = null;
+            try {
+            	stream = ImageIO.createImageOutputStream(buffer);
                 writer.setOutput(stream);
                 writer.write(drawSomething((BufferedImage) testData));
             }

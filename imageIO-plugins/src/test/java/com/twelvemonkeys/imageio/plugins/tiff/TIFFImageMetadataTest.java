@@ -48,10 +48,16 @@ public class TIFFImageMetadataTest {
 
     // TODO: Candidate abstract super method
     private IIOMetadata createMetadata(final String resource) throws IOException {
-        try (ImageInputStream input = ImageIO.createImageInputStream(getClassLoaderResource(resource))) {
+    	ImageInputStream input = null;//ImageIO.createImageInputStream(getClassLoaderResource(resource)
+        try  {
+        	input = ImageIO.createImageInputStream(getClassLoaderResource(resource));
             Directory ifd = new EXIFReader().read(input);
 //            System.err.println("ifd: " + ifd);
             return new TIFFImageMetadata(ifd);
+        }finally{
+        	if(input != null){
+        		input.close();
+        	}
         }
     }
 
@@ -476,7 +482,7 @@ public class TIFFImageMetadataTest {
 
     @Test
     public void testStandardChromaSamplesPerPixel() {
-        Set<Entry> entries = new HashSet<>();
+        Set<Entry> entries = new HashSet<Entry>();
         entries.add(new TIFFImageWriter.TIFFEntry(TIFF.TAG_PHOTOMETRIC_INTERPRETATION, TIFFBaseline.PHOTOMETRIC_RGB));
         entries.add(new TIFFImageWriter.TIFFEntry(TIFF.TAG_SAMPLES_PER_PIXEL, 4));
         entries.add(new TIFFImageWriter.TIFFEntry(TIFF.TAG_BITS_PER_SAMPLE, new int[] {8, 8, 8})); // This is incorrect, just making sure the correct value is selected
@@ -490,7 +496,7 @@ public class TIFFImageMetadataTest {
 
     @Test
     public void testStandardChromaSamplesPerPixelFallbackBitsPerSample() {
-        Set<Entry> entries = new HashSet<>();
+        Set<Entry> entries = new HashSet<Entry>();
         entries.add(new TIFFImageWriter.TIFFEntry(TIFF.TAG_PHOTOMETRIC_INTERPRETATION, TIFFBaseline.PHOTOMETRIC_RGB));
         entries.add(new TIFFImageWriter.TIFFEntry(TIFF.TAG_BITS_PER_SAMPLE, new int[] {8, 8, 8}));
 
@@ -503,7 +509,7 @@ public class TIFFImageMetadataTest {
 
     @Test
     public void testStandardChromaSamplesPerPixelFallbackDefault() {
-        Set<Entry> entries = new HashSet<>();
+        Set<Entry> entries = new HashSet<Entry>();
         entries.add(new TIFFImageWriter.TIFFEntry(TIFF.TAG_PHOTOMETRIC_INTERPRETATION, TIFFBaseline.PHOTOMETRIC_BLACK_IS_ZERO));
 
         IIOMetadataNode chromaNode = new TIFFImageMetadata(entries).getStandardChromaNode();
@@ -514,7 +520,7 @@ public class TIFFImageMetadataTest {
 
     @Test
     public void testStandardDataBitsPerSampleFallbackDefault() {
-        Set<Entry> entries = new HashSet<>();
+        Set<Entry> entries = new HashSet<Entry>();
         entries.add(new TIFFImageWriter.TIFFEntry(TIFF.TAG_PHOTOMETRIC_INTERPRETATION, TIFFBaseline.PHOTOMETRIC_BLACK_IS_ZERO));
 
         IIOMetadataNode dataNode = new TIFFImageMetadata(entries).getStandardDataNode();
@@ -525,7 +531,7 @@ public class TIFFImageMetadataTest {
 
     @Test
     public void testStandardNodeSamplesPerPixelFallbackDefault() {
-        Set<Entry> entries = new HashSet<>();
+        Set<Entry> entries = new HashSet<Entry>();
         entries.add(new TIFFImageWriter.TIFFEntry(TIFF.TAG_PHOTOMETRIC_INTERPRETATION, TIFFBaseline.PHOTOMETRIC_RGB));
 
         // Just to make sure we haven't accidentally missed something

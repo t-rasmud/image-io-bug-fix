@@ -1,13 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.twelvemonkeys</groupId>
-	<artifactId>imageIO-plugins</artifactId>
-	<version>3.3-SNAPSHOT</version>
+	<groupId>com.shuqi</groupId>
+	<artifactId>imageio-plugins</artifactId>
+	<version>1.2</version>
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<description>
-	项目全部源代码来自于：https://github.com/haraldk/TwelveMonkeys，本项目只是将原来代码的imageIO扩展部分进行简单的合并。合并的具体模块如下：
+	---------------------------------------------------------------------------------------------------------
+	修复JDK BUG 
+	java.lang.ArrayIndexOutOfBoundsException: 4096
+	    at com.sun.imageio.plugins.gif.GIFImageReader.read(Unknown Source)
+	    at javax.imageio.ImageIO.read(Unknown Source)
+	    at javax.imageio.ImageIO.read(Unknown Source)
+	[PatchedGIFImageReader](https://pastebin.com/h58zjT8K)
+	[arrayindexoutofboundsexception](https://stackoverflow.com/questions/22259714/arrayindexoutofboundsexception-4096-while-reading-gif-file)
+	---------------------------------------------------------------------------------------------------------
+	项目全部源代码来自于：https://github.com/haraldk/TwelveMonkeys@3.3-SNAPSHOT，本项目只是将原来代码的imageIO扩展部分进行简单的合并。合并的具体模块如下：
 		common-image、common-io、common-lang
 		imageio-core、imageio-metadata
 		imageio-bmp、imageio-jpeg、imageio-tiff、imageio-iff
@@ -112,7 +121,7 @@
 
 
 	<build>
-		<finalName>twelvemonkeys-${project.artifactId}-${project.version}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -124,6 +133,19 @@
 					<encoding>${project.encoding}</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-source-plugin</artifactId>
+	            <version>3.0.1</version>
+	            <executions>
+	                <execution>
+	                    <id>attach-sources</id>
+	                    <goals>
+	                        <goal>jar</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+	        </plugin>
 		</plugins>
 	</build>
 

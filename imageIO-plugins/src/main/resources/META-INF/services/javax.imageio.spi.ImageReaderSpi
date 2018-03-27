@@ -4,3 +4,4 @@ com.twelvemonkeys.imageio.plugins.bmp.ICOImageReaderSpi
 com.twelvemonkeys.imageio.plugins.jpeg.JPEGImageReaderSpi
 com.twelvemonkeys.imageio.plugins.tiff.TIFFImageReaderSpi
 com.twelvemonkeys.imageio.plugins.iff.IFFImageReaderSpi
+com.shuqi.imageio.patch.spi.PatchedGIFImageReaderSpi

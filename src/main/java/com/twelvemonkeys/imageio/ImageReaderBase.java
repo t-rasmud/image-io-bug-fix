@@ -228,6 +228,7 @@ public abstract class ImageReaderBase extends ImageReader {
      * or if the product of {@code width} and {@code height} of the resulting image is greater than
      * {@code Integer.MAX_VALUE}.
      */
+    @SuppressWarnings("iteration:method.invocation")    // null as a proxy for hasNext: control returns if Iterator is null
     public static BufferedImage getDestination(final ImageReadParam param, final Iterator<ImageTypeSpecifier> types,
                                                final int width, final int height) throws IIOException {
         // Adapted from http://java.net/jira/secure/attachment/29712/TIFFImageReader.java.patch,

@@ -130,6 +130,7 @@ public class WeakWeakMap<K, V> extends WeakHashMap<K, V> {
     }
 
     @Override
+    @SuppressWarnings("iteration:method.invocation")    // next implementation: call to next in Iterator implementation
     public Set<Map.Entry<K, V>> entrySet() {
         return new AbstractSet<Map.Entry<K, V>>() {
             public Iterator<Map.Entry<K, V>> iterator() {
@@ -186,6 +187,7 @@ public class WeakWeakMap<K, V> extends WeakHashMap<K, V> {
     }
 
     @Override
+    @SuppressWarnings("iteration:method.invocation")    // next implementation: call to next in Iterator implementation
     public Collection<V> values() {
         return new AbstractCollection<V>() {
             public Iterator<V> iterator() {

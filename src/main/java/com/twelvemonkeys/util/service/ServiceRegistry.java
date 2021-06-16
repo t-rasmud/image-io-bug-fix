@@ -427,6 +427,7 @@ public class ServiceRegistry {
             return providers.containsKey(pProvider != null ? pProvider.getClass() : null);
         }
 
+        @SuppressWarnings("iteration:method.invocation")    // next implementation: call to next in Iterator implementation
         public Iterator<T> providers() {
             // NOTE: The iterator must support removal because deregistering
             // using the deregister method will result in

@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Iterator;
+import org.checkerframework.checker.iteration.qual.HasNext;
 
 /**
  * ImageReader for Microsoft Windows Bitmap (BMP) format.
@@ -188,7 +189,8 @@ public final class BMPImageReader extends ImageReaderBase {
     }
 
     @Override
-    public Iterator<ImageTypeSpecifier> getImageTypes(int pImageIndex) throws IOException {
+    @SuppressWarnings("iteration:return")    // Iterator has next : Iterator guaranteed to have atleast one element (getImageType is never empty)
+    public @HasNext Iterator<ImageTypeSpecifier> getImageTypes(int pImageIndex) throws IOException {
         checkBounds(pImageIndex);
 
         // TODO: Better implementation, include INT_RGB types for 3BYTE_BGR and 4BYTE_ABGR for INT_ARGB

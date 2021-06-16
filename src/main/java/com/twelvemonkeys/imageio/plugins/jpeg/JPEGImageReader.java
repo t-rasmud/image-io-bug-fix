@@ -62,6 +62,7 @@ import java.awt.image.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import org.checkerframework.checker.iteration.qual.HasNext;
 
 /**
  * A JPEG {@code ImageReader} implementation based on the JRE {@code JPEGImageReader},
@@ -220,7 +221,8 @@ public class JPEGImageReader extends ImageReaderBase {
     }
 
     @Override
-    public Iterator<ImageTypeSpecifier> getImageTypes(int imageIndex) throws IOException {
+    @SuppressWarnings("iteration:return")   // Iterator has next : Iterator guaranteed to have atleast one element (typeList never empty)
+    public @HasNext Iterator<ImageTypeSpecifier> getImageTypes(int imageIndex) throws IOException {
         Iterator<ImageTypeSpecifier> types = delegate.getImageTypes(imageIndex);
         JPEGColorSpace csType = getSourceCSType(getJFIF(), getAdobeDCT(), getSOF());
 

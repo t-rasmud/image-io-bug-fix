@@ -30,6 +30,7 @@ package com.twelvemonkeys.util;
 
 import java.util.Iterator;
 import java.util.Enumeration;
+import org.checkerframework.checker.iteration.qual.HasNext;
 
 /**
  * TokenIterator, Iterator-based replacement for StringTokenizer.
@@ -47,7 +48,7 @@ public interface TokenIterator extends Iterator<String>, Enumeration<String> {
      * @return the next element in the iteration.
      * @exception java.util.NoSuchElementException iteration has no more elements.
      */
-    String nextToken();
+    String nextToken(@HasNext TokenIterator this);
 
     /**
      * Resets this iterator.

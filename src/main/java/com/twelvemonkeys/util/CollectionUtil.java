@@ -376,6 +376,7 @@ public final class CollectionUtil {
         return (T[]) subArray((Object) pArray, pStart, pLength);
     }
 
+    @SuppressWarnings("iteration:method.invocation")    // next implementation: call to next in Iterator implementation
     public static <T> Iterator<T> iterator(final Enumeration<T> pEnum) {
         notNull(pEnum, "enumeration");
         

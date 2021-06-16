@@ -28,6 +28,8 @@
 
 package com.twelvemonkeys.util;
 
+import org.checkerframework.checker.iteration.qual.HasNext;
+
 /**
  * Abstract base class for {@code TokenIterator}s to extend.
  * <p/>
@@ -65,7 +67,7 @@ public abstract class AbstractTokenIterator implements TokenIterator {
      * @exception java.util.NoSuchElementException iteration has no more elements.
      * @see #next()
      */
-    public final String nextToken() {
+    public final String nextToken(@HasNext AbstractTokenIterator this) {
         return next();
     }
 
@@ -81,7 +83,7 @@ public abstract class AbstractTokenIterator implements TokenIterator {
      * This implementation simply returns {@code next()}.
      * @see #next()
      */
-    public final String nextElement() {
+    public final String nextElement(@HasNext AbstractTokenIterator this) {
         return next();
     }
 }

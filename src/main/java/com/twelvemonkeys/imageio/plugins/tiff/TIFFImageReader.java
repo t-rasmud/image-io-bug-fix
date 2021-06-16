@@ -107,6 +107,7 @@ import com.twelvemonkeys.io.FastByteArrayOutputStream;
 import com.twelvemonkeys.io.LittleEndianDataInputStream;
 import com.twelvemonkeys.io.enc.DecoderStream;
 import com.twelvemonkeys.io.enc.PackBitsDecoder;
+import org.checkerframework.checker.iteration.qual.HasNext;
 
 /**
  * ImageReader implementation for Aldus/Adobe Tagged Image File Format (TIFF).
@@ -752,7 +753,7 @@ public class TIFFImageReader extends ImageReaderBase {
     }
 
     @Override
-    public Iterator<ImageTypeSpecifier> getImageTypes(int imageIndex) throws IOException {
+    public @HasNext Iterator<ImageTypeSpecifier> getImageTypes(int imageIndex) throws IOException {
         readIFD(imageIndex);
 
         ImageTypeSpecifier rawType = getRawImageType(imageIndex);

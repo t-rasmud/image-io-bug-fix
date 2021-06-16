@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import org.checkerframework.checker.iteration.qual.HasNext;
 
 /**
  * Reader for Commodore Amiga (Electronic Arts) IFF ILBM (InterLeaved BitMap) and PBM
@@ -319,7 +320,8 @@ public class IFFImageReader extends ImageReaderBase {
         return header.height;
     }
 
-    public Iterator<ImageTypeSpecifier> getImageTypes(int pIndex) throws IOException {
+    @SuppressWarnings("iteration:return")    // Iterator has next : Iterator guaranteed to have atleast one element (types is never empty)
+    public @HasNext Iterator<ImageTypeSpecifier> getImageTypes(int pIndex) throws IOException {
         init(pIndex);
 
         List<ImageTypeSpecifier> types = Arrays.asList(

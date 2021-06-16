@@ -50,6 +50,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.*;
 import java.util.List;
+import org.checkerframework.checker.iteration.qual.HasNext;
 
 /**
  * ImageReader for Microsoft Windows ICO (icon) format.
@@ -95,7 +96,7 @@ abstract class DIBImageReader extends ImageReaderBase {
         }
     }
 
-    public Iterator<ImageTypeSpecifier> getImageTypes(final int pImageIndex) throws IOException {
+    public @HasNext Iterator<ImageTypeSpecifier> getImageTypes(final int pImageIndex) throws IOException {
         DirectoryEntry entry = getEntry(pImageIndex);
 
         // NOTE: Delegate to PNG reader
@@ -227,7 +228,7 @@ abstract class DIBImageReader extends ImageReaderBase {
         return initPNGReader(pEntry).read(0, pParam);
     }
 
-    private Iterator<ImageTypeSpecifier> getImageTypesPNG(final DirectoryEntry pEntry) throws IOException {
+    private @HasNext Iterator<ImageTypeSpecifier> getImageTypesPNG(final DirectoryEntry pEntry) throws IOException {
         return initPNGReader(pEntry).getImageTypes(0);
     }
 

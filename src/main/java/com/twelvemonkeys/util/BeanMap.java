@@ -36,6 +36,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.io.Serializable;
+import org.checkerframework.checker.iteration.qual.HasNext;
 
 /**
  * A {@code Map} adapter for a Java Bean.
@@ -144,7 +145,7 @@ public final class BeanMap extends AbstractMap<String, Object> implements Serial
             return mIterator.hasNext();
         }
 
-        public BeanEntry next() {
+        public BeanEntry next(@HasNext BeanIterator this) {
             return new BeanEntry(mIterator.next());
         }
 

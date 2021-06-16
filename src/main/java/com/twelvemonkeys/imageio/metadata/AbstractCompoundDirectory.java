@@ -88,6 +88,7 @@ public abstract class AbstractCompoundDirectory extends AbstractDirectory implem
     }
 
     @Override
+    @SuppressWarnings("iteration:method.invocation")    // next implementation: call to next in Iterator implementation
     public Iterator<Entry> iterator() {
         return new Iterator<Entry>() {
             Iterator<Directory> directoryIterator = directories.iterator();

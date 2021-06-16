@@ -24,6 +24,7 @@ import javax.imageio.stream.ImageInputStream;
 import com.sun.imageio.plugins.common.ReaderUtil;
 import com.sun.imageio.plugins.gif.GIFImageMetadata;
 import com.sun.imageio.plugins.gif.GIFStreamMetadata;
+import org.checkerframework.checker.iteration.qual.HasNext;
 
 public class PatchedGIFImageReader extends ImageReader {
 
@@ -168,7 +169,7 @@ public class PatchedGIFImageReader extends ImageReader {
         return imageMetadata.imageHeight;
     }
 
-    public Iterator getImageTypes(int imageIndex) throws IIOException {
+    public @HasNext Iterator getImageTypes(int imageIndex) throws IIOException {
         checkIndex(imageIndex);
 
         int index = locateImage(imageIndex);

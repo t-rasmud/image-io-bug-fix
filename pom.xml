@@ -125,7 +125,7 @@
 		<dependency>
 			<groupId>org.checkerframework</groupId>
 			<artifactId>checker-qual</artifactId>
-			<version>3.14.1-SNAPSHOT</version>
+			<version>3.17.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.errorprone</groupId>
@@ -167,7 +167,7 @@
 						<path>
 							<groupId>org.checkerframework</groupId>
 							<artifactId>checker</artifactId>
-							<version>3.14.1-SNAPSHOT</version>
+							<version>3.17.0</version>
 						</path>
 					</annotationProcessorPaths>
 					<annotationProcessors>
@@ -175,6 +175,8 @@
 						<annotationProcessor>org.checkerframework.checker.iteration.IterationChecker</annotationProcessor>
 					</annotationProcessors>
 					<compilerArgs>
+						<arg>-AwarnUnneededSuppressions</arg>
+						<arg>"-AsuppressWarnings=conditional.postcondition,contracts.postcondition,override.return"</arg>
 						<!-- <arg>-Awarns</arg> --> <!-- -Awarns turns type-checking errors into warnings. -->
 					</compilerArgs>
 				</configuration>
@@ -229,7 +231,7 @@
 								<path>
 									<groupId>org.checkerframework</groupId>
 									<artifactId>checker</artifactId>
-									<version>3.14.1-SNAPSHOT</version>
+									<version>3.17.0</version>
 								</path>
 							</annotationProcessorPaths>
 							<annotationProcessors>
@@ -237,6 +239,8 @@
 								<annotationProcessor>org.checkerframework.checker.iteration.IterationChecker</annotationProcessor>
 							</annotationProcessors>
 							<compilerArgs>
+								<arg>-AwarnUnneededSuppressions</arg>
+								<arg>"-AsuppressWarnings=conditional.postcondition,contracts.postcondition,override.return"</arg>
 								<!-- <arg>-Awarns</arg> --> <!-- -Awarns turns type-checking errors into warnings. -->
 							</compilerArgs>
 						</configuration>
@@ -247,7 +251,7 @@
 				<dependency>
 					<groupId>org.checkerframework</groupId>
 					<artifactId>checker</artifactId>
-					<version>3.14.1-SNAPSHOT</version>
+					<version>3.17.0</version>
 				</dependency>
 			</dependencies>
 		</profile>
